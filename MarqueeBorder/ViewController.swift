@@ -14,48 +14,41 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-    
-        cornerView = UIView(frame: CGRect(x: 100, y: 100, width: 200, height: 100))
+        let frame = CGRect(x: 100, y: 200, width: 200, height: 400)
+        cornerView = UIView(frame: frame)
         cornerView?.layer.cornerRadius = 10
-        cornerView?.backgroundColor = UIColor.clear
+        cornerView?.backgroundColor = UIColor.systemYellow
         self.view.addSubview(cornerView!)
+        
+        let path = UIBezierPath.init(roundedRect: cornerView!.bounds, cornerRadius: 10)
         
         let shapeLayer = CAShapeLayer()
         shapeLayer.frame = cornerView!.bounds
         shapeLayer.lineWidth = 5
-        shapeLayer.repeatCount = 1
-        shapeLayer.lineDashPhase = 1
         shapeLayer.fillColor = nil
         shapeLayer.strokeColor = UIColor.black.cgColor
-        
-        let path = UIBezierPath.init(roundedRect: cornerView!.bounds, cornerRadius: 10)
         shapeLayer.path = path.cgPath
-        
-        let pLayer = CALayer()
-        pLayer.frame = cornerView!.bounds
-        cornerView!.layer.addSublayer(pLayer)
-        
-        let d = sqrt(200 * 200 + 100 * 100)
-        let r = d / 2
-        
-        let x = 100 - r
-        let y = 50 - r
+                    
+        let d = sqrt(frame.width * frame.width + frame.height * frame.height)
         let gLayer = CAGradientLayer()
-        gLayer.frame = CGRect(x: x, y: y, width: d, height: d)
-        gLayer.backgroundColor = UIColor.white.cgColor
+        gLayer.frame = CGRect(x: -(d - frame.width)/2, y: -(d - frame.height)/2, width: d, height: d)
+        
         gLayer.colors = [UIColor.red.cgColor, UIColor.blue.cgColor, UIColor.green.cgColor,UIColor.red.cgColor]
-        gLayer.locations = [0.0, 0.3, 0.6, 0.9]
+        gLayer.locations = [0.0, 0.33, 0.66, 1.0]
         gLayer.startPoint = CGPoint(x: 0.5, y: 0.5)
         gLayer.endPoint = CGPoint(x: 0.5, y: 1.0)
         gLayer.type = .conic
-        pLayer.addSublayer(gLayer)
         
+        let pLayer = CALayer()
+        pLayer.frame = cornerView!.bounds
         pLayer.mask = shapeLayer
-        
+        pLayer.addSublayer(gLayer)
+        cornerView!.layer.addSublayer(pLayer)
+
         let animate = CABasicAnimation.init(keyPath: "transform.rotation.z")
         animate.toValue = Double.pi * 2
-        animate.duration = 0.5
-        animate.repeatCount = 9999
+        animate.duration = 1
+        animate.repeatCount = Float(INT_MAX)
         gLayer.add(animate, forKey: nil)
     }
     
